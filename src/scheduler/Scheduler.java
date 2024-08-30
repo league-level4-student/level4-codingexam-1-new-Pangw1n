@@ -1,5 +1,7 @@
 package scheduler;
 
+import java.util.Scanner;
+
 /*
  * Objective: Create a weekly scheduling application.
  * 
@@ -23,9 +25,49 @@ package scheduler;
  * - Make sure any enums or classes you create have properly encapsulated member
  *   variables.
  */
+
+
 public class Scheduler {
+	
+private LinkedList<Day> schedule;
+private boolean fullClock;
 
     public static void main(String[] args) {
-
+    	new Scheduler().run();
+    }
+    
+    public void run()
+    {
+    	Scanner scanner = new Scanner(System.in);
+    	
+    	String input = "";
+    	
+    	do 
+    	{
+    		System.out.println("Use 24 hour clock? (y/n)");
+    		input = scanner.nextLine();
+    		fullClock = input.equalsIgnoreCase("y") ? true : false;
+    	}
+    	while (!input.equalsIgnoreCase("y") && !input.equalsIgnoreCase("n"));
+    	
+    	schedule = new LinkedList<Day>();
+    	
+    	Day[] days = Day.values();
+    	for (int i = 0; i < days.length; i++)
+    	{
+    		schedule.add(days[i]);
+    	}
+    	
+    	displayCalendar();
+    }
+    
+    public void displayCalendar()
+    {
+    	Node<Day> current = schedule.getHead();
+    	while (current != null)
+    	{
+    		System.out.println(current.getValue());
+    		current = current.getNext();
+    	}
     }
 }
