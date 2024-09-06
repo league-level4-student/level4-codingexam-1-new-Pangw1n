@@ -5,21 +5,26 @@ public enum Day {
 	
 	private LinkedList<Event> events = new LinkedList<Event>();
 	
-	public void addEvent(String title, int hour, int min) throws InvalidTimeException
+	public void addEvent(String title, int hour, int min) throws InvalidTimeException, SchedulingConflictException
 	{
 		Event newEvent = new Event(title, hour, min);
 		Node<Event> current = events.getHead();
 		if (current == null)
 		{
 			events.add(newEvent);
+			return;
 		}
 		else
 		{
 			while (current != null)
 			{
-				if (current.getValue().getHour() <= newEvent.getHour() && current.getValue().getMinute() <= newEvent.getMinute())
+				if (current.getValue().getHour() < newEvent.getHour() && current.getValue().getMinute() < newEvent.getMinute())
 				{
 					current = current.getNext();
+				}
+				else if (current.getValue().getHour() == newEvent.getHour() && current.getValue().getMinute() == newEvent.getMinute())
+				{
+					throw new SchedulingConflictException();
 				}
 				else
 				{
@@ -29,11 +34,21 @@ public enum Day {
 						events.setHead(newNode);
 					}
 					newNode.setNext(current);
-					newNode.setPrev(current.getPrev());
-					current.getPrev().setNext(newNode);
+					if (current.getPrev() != null)
+					{
+						newNode.setPrev(current.getPrev());
+						current.getPrev().setNext(newNode);
+					}
 					current.setPrev(newNode);
+					return;
 				}
 			}
+			events.add(newEvent);
 		}
+	}
+	
+	public LinkedList<Event> getEvents()
+	{
+		return events;
 	}
 }

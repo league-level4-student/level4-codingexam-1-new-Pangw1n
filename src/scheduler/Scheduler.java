@@ -31,6 +31,10 @@ public class Scheduler {
 	
 private LinkedList<Day> schedule;
 private boolean fullClock;
+private boolean quit;
+Scanner scanner;
+String input;
+
 
     public static void main(String[] args) {
     	new Scheduler().run();
@@ -38,9 +42,9 @@ private boolean fullClock;
     
     public void run()
     {
-    	Scanner scanner = new Scanner(System.in);
+    	scanner = new Scanner(System.in);
     	
-    	String input = "";
+    	input = "";
     	
     	do 
     	{
@@ -59,6 +63,22 @@ private boolean fullClock;
     	}
     	
     	displayCalendar();
+    	
+    	do
+    	{
+    		System.out.println("Commands: Add, View");
+    		input = scanner.nextLine();
+    		switch(input.toLowerCase())
+    		{
+    			case "add":
+    				addEvent();
+    				break;
+    			case "view":
+    				displayCalendar();
+    				break;
+    		}
+    	}
+    	while (!quit);
     }
     
     public void displayCalendar()
@@ -67,7 +87,77 @@ private boolean fullClock;
     	while (current != null)
     	{
     		System.out.println(current.getValue());
+    		Node<Event> currentEvent = current.getValue().getEvents().getHead();
+    		while (currentEvent != null)
+    		{
+    			System.out.println(" - " + (fullClock ? currentEvent.getValue().getTime24() : currentEvent.getValue().getTime12()) + " - " + currentEvent.getValue().getTitle());
+    			currentEvent = currentEvent.getNext();
+    		}
     		current = current.getNext();
     	}
+    }
+    
+    public void addEvent()
+    {
+    	System.out.println("Enter a day: ");
+    	String inputDay = scanner.next();
+    	scanner.nextLine();
+    	
+    	Node<Day> current = schedule.getHead();
+    	Node<Day> day = null;
+    	while (current != null)
+    	{
+    		if (current.getValue().toString().equalsIgnoreCase(inputDay))
+    		{
+    			day = current;
+    			break;
+    		}
+    		else
+    		{
+    			current = current.getNext();
+    		}
+    	}
+    	if (day == null)
+    	{
+    		System.out.println("invalid day");
+    		addEvent();
+    		return;
+    	}
+    		
+    		
+    	
+    	System.out.println("Enter a title: ");
+    	String inputTitle = scanner.nextLine();
+    	
+    	System.out.println("Enter an hour: ");
+    	int inputHour = scanner.nextInt();
+    	scanner.nextLine();
+    	
+    	System.out.println("Enter a minute: ");
+    	int inputMin = scanner.nextInt();
+    	scanner.nextLine();
+    	
+    	if (!fullClock)
+    	{
+    		System.out.println("Am or Pm");
+    		String inputTime = scanner.nextLine();
+    		boolean pm = inputTime.toLowerCase() == "pm" ? true : false;
+    		
+    		if (inputHour < 12 && pm)
+    		{
+    			inputHour += 12;
+    		}
+    		if (inputHour == 12 && !pm)
+    		{
+    			inputHour = 0;
+    		}
+    	}
+    	
+		try {
+			day.getValue().addEvent(inputTitle, inputHour, inputMin);
+		} catch (InvalidTimeException | SchedulingConflictException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 }
