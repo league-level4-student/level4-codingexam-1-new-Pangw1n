@@ -5,10 +5,24 @@ public enum Day {
 	
 	private LinkedList<Event> events = new LinkedList<Event>();
 	
-	public void addEvent(String title, int hour, int min) throws InvalidTimeException, SchedulingConflictException
-	{
+	public void addEvent(String title, int hour, int min) throws InvalidTimeException, SchedulingConflictException, TitleConflictException
+	{	
 		Event newEvent = new Event(title, hour, min);
 		Node<Event> current = events.getHead();
+		
+		while (current != null)
+		{
+			if (current.getValue().getTitle().equalsIgnoreCase(title))
+			{
+				throw new TitleConflictException();
+			}
+			else
+			{
+				current = current.getNext();
+			}
+		}
+		current = events.getHead();
+		
 		if (current == null)
 		{
 			events.add(newEvent);
@@ -18,9 +32,15 @@ public enum Day {
 		{
 			while (current != null)
 			{
-				if (current.getValue().getHour() < newEvent.getHour() && current.getValue().getMinute() < newEvent.getMinute())
+				if (current.getValue().getHour() < newEvent.getHour())
 				{
 					current = current.getNext();
+					continue;
+				}
+				else if (current.getValue().getMinute() < newEvent.getMinute())
+				{
+					current = current.getNext();
+					continue;
 				}
 				else if (current.getValue().getHour() == newEvent.getHour() && current.getValue().getMinute() == newEvent.getMinute())
 				{

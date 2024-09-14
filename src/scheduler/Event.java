@@ -8,7 +8,7 @@ public class Event{
 	
 	public Event(String title, int hour, int min) throws InvalidTimeException
 	{
-		this.title = title;
+		setTitle(title);
 		setTime(hour, min);
 	}
 	

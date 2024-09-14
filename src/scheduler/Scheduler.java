@@ -66,20 +66,33 @@ String input;
     	
     	do
     	{
-    		System.out.println("Commands: Add, View");
+    		System.out.println("Commands: Add, Remove, View, Quit");
     		input = scanner.nextLine();
     		switch(input.toLowerCase())
     		{
     			case "add":
-    				addEvent();
+    				try {
+        				addEvent();
+					} catch (Exception e) {
+						System.out.println("error");
+						e.printStackTrace();
+					}
+    				break;
+    			case "remove":
+    				removeEvent();
     				break;
     			case "view":
     				displayCalendar();
+    				break;
+    			case "quit":
+    				quit = true;
     				break;
     		}
     	}
     	while (!quit);
     }
+    
+    
     
     public void displayCalendar()
     {
@@ -100,8 +113,7 @@ String input;
     public void addEvent()
     {
     	System.out.println("Enter a day: ");
-    	String inputDay = scanner.next();
-    	scanner.nextLine();
+    	String inputDay = scanner.nextLine();
     	
     	Node<Day> current = schedule.getHead();
     	Node<Day> day = null;
@@ -141,23 +153,70 @@ String input;
     	{
     		System.out.println("Am or Pm");
     		String inputTime = scanner.nextLine();
-    		boolean pm = inputTime.toLowerCase() == "pm" ? true : false;
+    		boolean pm = inputTime.equalsIgnoreCase("pm") ? true : false;
     		
     		if (inputHour < 12 && pm)
     		{
     			inputHour += 12;
     		}
-    		if (inputHour == 12 && !pm)
+    		else if (inputHour == 12 && !pm)
     		{
-    			inputHour = 0;
+    			inputHour = 24;
     		}
     	}
     	
 		try {
 			day.getValue().addEvent(inputTitle, inputHour, inputMin);
-		} catch (InvalidTimeException | SchedulingConflictException e) {
+		} catch (InvalidTimeException | SchedulingConflictException | TitleConflictException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+    }
+    
+    public void removeEvent()
+    {
+    	System.out.println("Enter a day: ");
+    	String inputDay = scanner.nextLine();
+    	
+    	Node<Day> currentDay = schedule.getHead();
+    	Node<Day> day = null;
+    	while (currentDay != null)
+    	{
+    		if (currentDay.getValue().toString().equalsIgnoreCase(inputDay))
+    		{
+    			day = currentDay;
+    			break;
+    		}
+    		else
+    		{
+    			currentDay = currentDay.getNext();
+    		}
+    	}
+    	if (day == null)
+    	{
+    		System.out.println("invalid day");
+    		removeEvent();
+    		return;
+    	}
+    	
+    	
+    	
+    	System.out.println("Enter an events title: ");
+    	String inputTitle = scanner.nextLine();
+    	Node<Event> current = day.getValue().getEvents().getHead();
+    	int count = 0;
+    	while (current != null)
+    	{
+    		if (current.getValue().getTitle().equalsIgnoreCase(inputTitle))
+    		{
+    			day.getValue().getEvents().remove(count);
+    			return;
+    		}
+    		else
+    		{
+    			current = current.getNext();
+    			count++;
+    		}
+    	}
     }
 }
