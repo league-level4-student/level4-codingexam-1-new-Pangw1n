@@ -3,12 +3,14 @@ package scheduler;
 public class Event{
 	//hour 0 = 12 am / 24
 	private String title;
+	private String description;
 	private int hour;
 	private int min;
 	
-	public Event(String title, int hour, int min) throws InvalidTimeException
+	public Event(String title, String description, int hour, int min) throws InvalidTimeException
 	{
 		setTitle(title);
+		setDescription(description);
 		setTime(hour, min);
 	}
 	
@@ -24,6 +26,15 @@ public class Event{
 		return title;
 	}
 	
+	public void setDescription(String description)
+	{
+		this.description = description;
+	}
+	
+	public String getDescription()
+	{
+		return description;
+	}
 	
 	
 	//24 hour

@@ -66,7 +66,7 @@ String input;
     	
     	do
     	{
-    		System.out.println("Commands: Add, Remove, View, Quit");
+    		System.out.println("Commands: Add, Remove, View, Event, Quit");
     		input = scanner.nextLine();
     		switch(input.toLowerCase())
     		{
@@ -84,12 +84,16 @@ String input;
     			case "view":
     				displayCalendar();
     				break;
+    			case "event":
+    				viewEvent();
+    				break;
     			case "quit":
     				quit = true;
     				break;
     		}
     	}
     	while (!quit);
+    	scanner.close();
     }
     
     
@@ -132,7 +136,6 @@ String input;
     	if (day == null)
     	{
     		System.out.println("invalid day");
-    		addEvent();
     		return;
     	}
     		
@@ -140,6 +143,9 @@ String input;
     	
     	System.out.println("Enter a title: ");
     	String inputTitle = scanner.nextLine();
+    	
+    	System.out.println("Enter a description: ");
+    	String inputDescription = scanner.nextLine();
     	
     	System.out.println("Enter an hour: ");
     	int inputHour = scanner.nextInt();
@@ -166,10 +172,10 @@ String input;
     	}
     	
 		try {
-			day.getValue().addEvent(inputTitle, inputHour, inputMin);
-		} catch (InvalidTimeException | SchedulingConflictException | TitleConflictException e) {
+			day.getValue().addEvent(inputTitle, inputDescription, inputHour, inputMin);
+		} catch (CustomException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
     }
     
@@ -195,7 +201,6 @@ String input;
     	if (day == null)
     	{
     		System.out.println("invalid day");
-    		removeEvent();
     		return;
     	}
     	
@@ -218,5 +223,136 @@ String input;
     			count++;
     		}
     	}
+    }
+    
+    public void viewEvent()
+    {
+    	System.out.println("Enter a day: ");
+    	String inputDay = scanner.nextLine();
+    	
+    	Node<Day> currentDay = schedule.getHead();
+    	Node<Day> day = null;
+    	while (currentDay != null)
+    	{
+    		if (currentDay.getValue().toString().equalsIgnoreCase(inputDay))
+    		{
+    			day = currentDay;
+    			break;
+    		}
+    		else
+    		{
+    			currentDay = currentDay.getNext();
+    		}
+    	}
+    	if (day == null)
+    	{
+    		System.out.println("invalid day");
+    		return;
+    	}
+    	
+    	
+    	
+    	System.out.println("Enter an events title: ");
+    	String inputTitle = scanner.nextLine();
+    	Node<Event> current = day.getValue().getEvents().getHead();
+    	while (current != null)
+    	{
+    		if (current.getValue().getTitle().equalsIgnoreCase(inputTitle))
+    		{
+    			System.out.println(current.getValue().getTitle() + " - " + (fullClock ? current.getValue().getTime24() : current.getValue().getTime12()));
+    			System.out.println(" - " + current.getValue().getDescription());
+    			return;
+    		}
+    		else
+    		{
+    			current = current.getNext();
+    		}
+    	}
+    }
+    
+    public void editEvent()
+    {
+    	System.out.println("Enter a day: ");
+    	String inputDay = scanner.nextLine();
+    	
+    	Node<Day> currentDay = schedule.getHead();
+    	Node<Day> day = null;
+    	while (currentDay != null)
+    	{
+    		if (currentDay.getValue().toString().equalsIgnoreCase(inputDay))
+    		{
+    			day = currentDay;
+    			break;
+    		}
+    		else
+    		{
+    			currentDay = currentDay.getNext();
+    		}
+    	}
+    	if (day == null)
+    	{
+    		System.out.println("invalid day");
+    		return;
+    	}
+    	
+    	
+    	
+    	System.out.println("Enter an events title: ");
+    	String inputTitle = scanner.nextLine();
+    	Node<Event> current = day.getValue().getEvents().getHead();
+    	while (current != null)
+    	{
+    		if (current.getValue().getTitle().equalsIgnoreCase(inputTitle))
+    		{
+    			System.out.println("Edit: Title, Description, or Time");
+    			switch(scanner.nextLine().toLowerCase())
+    			{
+    				case "title":
+    					System.out.println("Enter a new title: ");
+    					current.getValue().setTitle(scanner.nextLine());
+    					return;
+    				case "description":
+    					System.out.println("Enter a new description: ");
+    					current.getValue().setDescription(scanner.nextLine());
+    					return;
+    				case "time":
+    					System.out.println("Enter an hour");
+    					int inputHour = scanner.nextInt();
+    					scanner.nextLine();
+    					System.out.println("Enter a minute");
+    					int inputMin = scanner.nextInt();
+    					scanner.nextLine();
+    					
+    					if (fullClock)
+    					{
+        					try {
+								current.getValue().setTime(inputHour, inputMin);
+							} catch (InvalidTimeException e) {
+								// TODO Auto-generated catch block
+								System.out.println(e.message);
+							}
+    					}
+    					else 
+    					{
+    						System.out.println("AM / PM");
+    						boolean pm = scanner.nextLine().equalsIgnoreCase("pm") ? true : false;
+    						try {
+								current.getValue().setTime(inputHour, inputMin, pm);
+								//sort
+							} catch (InvalidTimeException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+    					}
+    			}
+    			System.out.println("return");
+    			return;
+    		}
+    		else
+    		{
+    			current = current.getNext();
+    		}
+    	}
+
     }
 }
