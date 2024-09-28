@@ -97,6 +97,10 @@ public enum Day {
 				Node<Event> Next = current.getNext();
 				Node<Event> Prev = current.getPrev();
 				
+				if(Next.getNext() != null)
+				{
+					Next.getNext().setPrev(current);
+				}
 				current.setNext(Next.getNext());
 				current.setPrev(Next);
 				

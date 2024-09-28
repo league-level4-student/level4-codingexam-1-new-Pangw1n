@@ -66,7 +66,7 @@ String input;
     	
     	do
     	{
-    		System.out.println("Commands: Add, Remove, View, Event, Quit");
+    		System.out.println("Commands: Add, Remove, View, Event, Edit, Quit");
     		input = scanner.nextLine();
     		switch(input.toLowerCase())
     		{
@@ -86,6 +86,9 @@ String input;
     				break;
     			case "event":
     				viewEvent();
+    				break;
+    			case "edit":
+    				editEvent();
     				break;
     			case "quit":
     				quit = true;
@@ -327,6 +330,7 @@ String input;
     					{
         					try {
 								current.getValue().setTime(inputHour, inputMin);
+								day.getValue().sortList();
 							} catch (InvalidTimeException e) {
 								// TODO Auto-generated catch block
 								System.out.println(e.message);
@@ -338,14 +342,13 @@ String input;
     						boolean pm = scanner.nextLine().equalsIgnoreCase("pm") ? true : false;
     						try {
 								current.getValue().setTime(inputHour, inputMin, pm);
-								//sort
+								day.getValue().sortList();
 							} catch (InvalidTimeException e) {
 								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
     					}
     			}
-    			System.out.println("return");
     			return;
     		}
     		else
